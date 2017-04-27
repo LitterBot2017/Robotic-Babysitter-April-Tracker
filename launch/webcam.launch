@@ -1,0 +1,27 @@
+<launch>
+  <node name="usb_cam" pkg="usb_cam" type="usb_cam_node" output="screen" >
+    <param name="video_device" value="/dev/video1" />
+    <param name="image_width" value="640" />
+    <param name="image_height" value="480" />
+    <param name="pixel_format" value="yuyv" />
+    <param name="camera_frame_id" value="usb_cam" />
+    <param name="io_method" value="mmap"/>
+  </node>
+  <node name="image_view" pkg="image_view" type="image_view" respawn="false" output="screen">
+    <remap from="image" to="/usb_cam/image_raw"/>
+    <param name="autosize" value="true" />
+  </node>
+
+  <include file="$(find apriltags)/launch/apriltags.launch">
+  </include>
+  <!-- Startup your modified apriltag wrapper node -->
+  <!-- TODO -->
+  <node name="AprilTagMarker1" pkg="april_tracker" type="apriltags_image.py">
+  </node>
+
+  <!-- Launch the image viewer and subscribe to the marked_april_tag topic -->
+  <node name="AprilTagID" pkg="image_view" type ="image_view">
+    <remap from="image" to="marked_april_tag" />
+  
+  </node>
+</launch>
